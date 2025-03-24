@@ -51,18 +51,6 @@ exports.login=async (req,res)=> {
         return res.status(400).json({success: false , msg : 'Invalid credentials'});
     }
 
-    const responseData = {
-      name: user.name,
-      email: user.email,
-      tel: user.tel,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      id: user._id
-    }
-
-    res.status(statusCode).cookie('jwt', token, options).json({success: true, token, user:responseData});
-
     sendTokenResponse(user,200,res);
 };
 
@@ -86,7 +74,18 @@ const sendTokenResponse= (user , statusCode , res) => {
     if(process.env.NODE_ENV === 'production') {
         options.secure = true ;
     }
-    res.status(statusCode).cookie('jwt' , token , options ).json({success : true , token});
+    
+    const responseData = {
+      name: user.name,
+      email: user.email,
+      tel: user.tel,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      id: user._id
+    }
+
+    res.status(statusCode).cookie('jwt', token, options).json({success: true, token, user:responseData});
 }
 
 exports.getMe =async (req ,res , next) => {

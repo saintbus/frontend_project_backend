@@ -9,6 +9,7 @@ const sessionRoute = require('./routes/session.route.js');
 
 const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUI = require('swagger-ui-express');
+const cors = require('cors')
 
 dotenv.config({path: './config/config.env'});
 
@@ -19,6 +20,8 @@ const app = express();
 app.use(express.json());
 
 app.use(cookieParser());
+
+app.use(cors());
 
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/companies", companyRoute);
@@ -40,7 +43,7 @@ const swaggerOptions={
     },
     servers: [
       {
-        url: 'http://localhost:5050/api/v1'
+        url: 'http://localhost:5000/api/v1'
       }
     ],
   },
