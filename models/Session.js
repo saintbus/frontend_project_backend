@@ -19,6 +19,31 @@ const SessionSchema = new mongoose.Schema({
         type:Date,
         default : Date.now
     }
+},
+{
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+});
+
+// CompanySchema.virtual('sessions', {
+//     ref: 'Session',
+//     localField: '_id',
+//     foreignField: 'company',
+//     justOne: false
+// });
+
+SessionSchema.virtual('Company', {
+    ref: 'Company',
+    localField: '_id',
+    foreignField: 'session',
+    justOne: false
+});
+
+SessionSchema.virtual('User', {
+    ref: 'User',
+    localField: '_id',
+    foreignField: 'session',
+    justOne: false
 });
 
 

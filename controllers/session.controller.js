@@ -1,60 +1,81 @@
 const Company = require('../models/Company');
 const Session = require('../models/Session');
 
-exports.getSessions = async (req,res,next) =>{
+exports.getSessions = async (req, res, next) => {
     let query;
-    if(req.user.role !== 'admin'){
-        query= Session.find({user:req.user.id}).populate({
-            path: 'company',
-            select: 'companyName address website tel'
-        });
-    }
-    else{
-        if(req.params.CompanyId){
-            query = Session.find({company:req.params.CompanyId}).populate({
+
+    if (req.user.role !== 'admin') {
+        query = Session.find({ user: req.user.id })
+            .populate({
                 path: 'company',
                 select: 'companyName address website tel'
+            })
+            .populate({
+                path: 'user', // If session references a user
+                select: 'name email'
             });
+    } else {
+        if (req.params.CompanyId) {
+            query = Session.find({ company: req.params.CompanyId })
+                .populate({
+                    path: 'company',
+                    select: 'companyName address website tel'
+                })
+                .populate({
+                    path: 'user',
+                    select: 'name email'
+                });
+        } else {
+            query = Session.find()
+                .populate({
+                    path: 'company',
+                    select: 'companyName address website tel'
+                })
+                .populate({
+                    path: 'user',
+                    select: 'name email'
+                });
         }
-        else query = Session.find().populate({
-            path: 'company',
-            select: 'companyName address website tel'
-        });
     }
 
     try {
-        const session = await query;
+        const sessions = await query;
 
         res.status(200).json({
-            success:true,
-            count:session.length,
-            data :session
+            success: true,
+            count: sessions.length,
+            data: sessions
         });
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            success:false,
-            msg:'Cannot find seesion'
+            success: false,
+            msg: 'Cannot find sessions'
         });
-        
     }
-
 };
 
-exports.getSession = async (req,res,next) =>{
-    try {const session = await Session.findById(req.params.id).populate({
-        path: 'company',
-        select: 'companyName address website tel'
-    });
+exports.getSession = async (req, res, next) => {
+    try {
+        const session = await Session.findById(req.params.id)
+            .populate({
+                path: 'company',
+                select: 'companyName address website tel'
+            })
+            .populate({
+                path: 'user',
+                select: 'name email'
+            });
 
-        if(!session){
-            return res.status(400).json({success:false,msg:'Not found session'});
+        if (!session) {
+            return res.status(400).json({ success: false, msg: 'Not found session' });
         }
-        res.status(200).json({success:true,data:session});
-        
+
+        res.status(200).json({ success: true, data: session });
+
     } catch (error) {
         console.log(error);
-        return res.status(500).json({success:false,msg:'Cannot find session'});
+        return res.status(500).json({ success: false, msg: 'Cannot find session' });
     }
 };
 
